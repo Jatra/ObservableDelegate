@@ -7,22 +7,33 @@ import kotlin.reflect.KProperty
 class ViewModel : android.arch.lifecycle.ViewModel() {
     var viewState: MutableLiveData<ViewState> = MutableLiveData()
     private var convertor = Converter()
-    private var localData: Int? by observable { updateView() }
+    private var localData: Int by observable(0) { updateView() }
 
     fun updateModel() {
-        localData = localData?.plus(1) ?: 1
+        localData = localData++
     }
 
     private fun updateView() {
         viewState.value = convertor.convert(localData)
     }
 
-    private inline fun <T> observable(crossinline onChange: (newValue: T?) -> Unit):
-            ReadWriteProperty<Any?, T?> = object : ReadWriteProperty<Any?, T?> {
-        private var value : T? = null
+//    private inline fun <T> observable(crossinline onChange: (newValue: T?) -> Unit):
+//            ReadWriteProperty<Any?, T?> = object : ReadWriteProperty<Any?, T?> {
+//        private var value : T? = null
+//
+//        override fun getValue(thisRef: Any?, property: KProperty<*>) = value
+//        override fun setValue(thisRef: Any?, property: KProperty<*>, value: T?) {
+//            this.value = value
+//            onChange(value)
+//        }
+//    }
+
+    private inline fun <T> observable(initial: T, crossinline onChange: (newValue: T) -> Unit):
+            ReadWriteProperty<Any?, T> = object : ReadWriteProperty<Any?, T> {
+        private var value : T = initial
 
         override fun getValue(thisRef: Any?, property: KProperty<*>) = value
-        override fun setValue(thisRef: Any?, property: KProperty<*>, value: T?) {
+        override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
             this.value = value
             onChange(value)
         }
