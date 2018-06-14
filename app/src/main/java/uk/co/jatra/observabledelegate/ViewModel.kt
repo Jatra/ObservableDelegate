@@ -10,7 +10,7 @@ class ViewModel : android.arch.lifecycle.ViewModel() {
     private var localData: Int by observable(0) { updateView() }
 
     fun updateModel() {
-        localData = localData++
+        localData += 1
     }
 
     private fun updateView() {
